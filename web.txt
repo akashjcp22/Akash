@@ -1,0 +1,4 @@
+<html>
+<title>WebApp</title>
+<body>Trying out AZURE</body>
+</html>
