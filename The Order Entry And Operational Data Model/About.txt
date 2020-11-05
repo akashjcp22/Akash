@@ -1,0 +1,4 @@
+Loaded some transactional data regarding a business from .csv files to a staging database 
+where data cleaning, validation, and redundancy removal was done. 
+This data was then loaded into a Data Warehouse for analytics purposes. 
+The ETL process was done using Informatica PowerCenter and Informatica Intelligent Cloud Services.
