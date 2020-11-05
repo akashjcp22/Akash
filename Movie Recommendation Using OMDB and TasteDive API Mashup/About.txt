@@ -1,3 +1,8 @@
 A small movie recommendation project where we give a movie name and it returns 
 similar movies sorted according to their ratings from various rating agencies 
 and the public using the help of two API's OMDB and Tastedive.
+
+The TasteDive API takes a movie (or bands, TV shows, etc.) as a query input,
+and returns a set of related items. The OMDB API takes a movie title as a query input 
+and get back data about the movie, including scores from various review sites (Rotten Tomatoes, IMDB, etc.).
+
