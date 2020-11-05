@@ -1,0 +1,3 @@
+A small movie recommendation project where we give a movie name and it returns 
+similar movies sorted according to their ratings from various rating agencies 
+and the public using the help of two API's OMDB and Tastedive.
