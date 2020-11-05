@@ -1,16 +1,15 @@
 import requests_with_caching
 
+**********************************************************************************************************************
+##Takes a movie name and returns 5 similar movies
+
 def get_movies_from_tastedive(movie):
     para = {'q':movie,'type':'movies','limit':5}
     page = requests_with_caching.get("https://tastedive.com/api/similar",para)
     return page.json()
 
-
-****************************
-def get_movies_from_tastedive(movie):
-    para = {'q':movie,'type':'movies','limit':5}
-    page = requests_with_caching.get("https://tastedive.com/api/similar",para)
-    return page.json()
+**********************************************************************************************************************
+## Extract movie names from the returned python object
 
 def extract_movie_titles(movies_dict):
     lst=[]
@@ -18,21 +17,9 @@ def extract_movie_titles(movies_dict):
            lst.append(movies_dict['Similar']['Results'][i]['Name'])
             
     return lst
-
-
-****************************
-
-def get_movies_from_tastedive(movie):
-    para = {'q':movie,'type':'movies','limit':5}
-    page = requests_with_caching.get("https://tastedive.com/api/similar",para)
-    return page.json()
-
-def extract_movie_titles(movies_dict):
-    lst=[]
-    for i in range(5):
-           lst.append(movies_dict['Similar']['Results'][i]['Name'])
-            
-    return lst
+    
+**********************************************************************************************************************
+## Taking the above list of movie names and returning five similar movies for each of them avoiding repetitions
 
 def get_related_titles(combined):
     lst=[]
@@ -44,69 +31,16 @@ def get_related_titles(combined):
                 lst.append(j)
     return lst
 
-
-*****************************
-
-
-def get_movie_data(title_movie):
-    para = {'t':title_movie,'r':'json'}
-    page = requests_with_caching.get("http://www.omdbapi.com/",para)
-    return page.json()
-
-*****************************
-
+**********************************************************************************************************************
+## Retrieving movie data from OMDB API
 
 def get_movie_data(title_movie):
     para = {'t':title_movie,'r':'json'}
     page = requests_with_caching.get("http://www.omdbapi.com/",para)
     return page.json()
 
-
-def get_movie_rating(mov):
-    print(mov)
-    if len(mov['Ratings']) >1:
-        val = mov['Ratings'][1]['Value']
-        if '%' in val:
-            s=''
-            for i in val:
-                if i!='%':
-                    s+=i
-                    print(s)
-            return int(s)
-        elif '/' in val:
-            lst = val.split('/')
-        return int(int(lst[0])/int(lst[1]))
-
-
-***********************************
-
-
-def get_movies_from_tastedive(movie):
-    para = {'q':movie,'type':'movies','limit':5}
-    page = requests_with_caching.get("https://tastedive.com/api/similar",para)
-    return page.json()
-
-def extract_movie_titles(movies_dict):
-    lst=[]
-    for i in range(5):
-           lst.append(movies_dict['Similar']['Results'][i]['Name'])
-            
-    return lst
-
-def get_related_titles(combined):
-    lst=[]
-    for i in combined:
-        lst1=[]
-        lst1 = extract_movie_titles(get_movies_from_tastedive(i))
-        for j in lst1:
-            if j not in lst:
-                lst.append(j)
-    return lst
-
-def get_movie_data(title_movie):
-    para = {'t':title_movie,'r':'json'}
-    page = requests_with_caching.get("http://www.omdbapi.com/",para)
-    return page.json()
+**********************************************************************************************************************
+## Retrieving movie rating
 
 def get_movie_rating(mov):
     s=''
@@ -117,11 +51,13 @@ def get_movie_rating(mov):
         return int(s[:-1])
     else:
         return 0
-    
+
+**********************************************************************************************************************
+## Takes a list of movie names and returns 5 similar movies for each one sorted according to their ratings
+
 def get_sorted_recommendations(movie_titles):
     ans= get_related_titles(movie_titles)
     ans_dct={}
     for title in ans:
         ans_dct[title] = get_movie_rating(get_movie_data(title))
     return [name for name,rating in sorted(ans_dct.items(),key= lambda x: (x[1],x[0]),reverse=True)]
-
