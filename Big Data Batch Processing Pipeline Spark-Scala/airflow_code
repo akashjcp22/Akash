@@ -1,0 +1,49 @@
+from datetime import datetime, timedelta
+from airflow import DAG
+from airflow.operators.bash import BashOperator
+
+with DAG(
+    'Retail_Batch_Pipeline',
+    default_args={
+		    'owner':'hdfs',
+        'depends_on_past': False,
+        'email': ['airflow@example.com'],
+        'email_on_failure': False,
+        'email_on_retry': False,
+        'retries': 1,
+        'retry_delay': timedelta(minutes=5),
+        # 'queue': 'bash_queue',
+        # 'pool': 'backfill',
+        # 'priority_weight': 10,
+        # 'end_date': datetime(2016, 1, 1),
+        # 'wait_for_downstream': False,
+        # 'sla': timedelta(hours=2),
+        # 'execution_timeout': timedelta(seconds=300),
+        # 'on_failure_callback': some_function,
+        # 'on_success_callback': some_other_function,
+        # 'on_retry_callback': another_function,
+        # 'sla_miss_callback': yet_another_function,
+        # 'trigger_rule': 'all_success'
+    },
+    description='Airflow configuration for Retail Batch Pipeline',
+    schedule_interval=timedelta(days=1),
+    start_date=datetime(2022, 04, 1),
+    catchup=False,
+    tags=['Batch'],
+) as dag:
+
+    t1 = BashOperator(
+        task_id='Landing_Zone_Ingest_Refine',
+		    depends_on_past=False,
+        bash_command='spark-submit --master yarn --deploy-mode cluster --jars /Retail_Batch_Pipeline/jars/config-1.3.3.jar --class Landing_Zone_Ingest_Refine /Retail_Batch_Pipeline/jars/Retail_Shop_Project_Batch_Pipeline-0.1.jar',
+		    retries=1,
+    )
+
+    t2 = BashOperator(
+        task_id='Product_Price_Vendor_Update',
+        depends_on_past=False,
+        bash_command='spark-submit --master yarn --deploy-mode cluster --jars /Retail_Batch_Pipeline/jars/config-1.3.3.jar --class Product_Price_Vendor_Update /Retail_Batch_Pipeline/jars/Retail_Shop_Project_Batch_Pipeline-0.1.jar',
+        retries=1,
+    )
+
+    t1 >> t2
