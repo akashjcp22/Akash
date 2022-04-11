@@ -1,1 +1,1 @@
-#Some of the projects I have done
+#Some of my personal projects done just for learning purpose
