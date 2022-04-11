@@ -1,0 +1,48 @@
+----------------- ------------------------------------------------------- Use Case -------------------------------------------------------------------
+
+The business is a retail shop with global presence. Their POS systems generate transactionnal data which is pushed into a central server.
+A big data pipeline should be designed to pick the data from server, transform and enrich it with other business data and make it ready for reporting.
+
+
+-------------------------------------------------------------------- Business Requirements ----------------------------------------------------------------
+
+All the combined transactional data will be available in the landing location of the server. Here i have taken 1 file per day from server
+(it can be more than 1 file per day in that case we have to modify the airflow dag schedule accordingly). This file contains information on 
+the sale happened like Sale_ID, Product_Name, Quantity_Sold,Vendor_ID, Sale_Amount to name a few columns.
+
+There are three more files coming from business headquaters as given below.
+1. Products file having information related to the products(like Product_ID, Product_Name etc)
+2. Vendors file having information related to the vendors(like Vendor_ID, Vendor_Name etc)
+3. USD_Rates file having information related to the exchange rates of various currencies compared to USD(like Currency_Type, Exchange_Value etc).
+
+Conditions given by business.
+1. If in a daily file Quantity_Sold or Vendor_ID is coming as null then we have to hold those records from processing. 
+In the next days file if we are receiving any updates for those Sale_ID's we have to process them.
+
+2. If Sale_Amount is coming as null in the file we have to calculate it.
+
+3. We have to use the currency exchange rate value from USD_Rates file to calculate the sale amounts in USD for all sales.
+
+4. We have to enrich the file data with the data from Products and Vendors file and the final data should be ready to do reporting and visualizing.
+
+
+------------------------------------------------------------------------- Implementation ---------------------------------------------------------------------
+
+I have used HDP 3.0 sandbox for this project. Though the code can be developed and tested on local machine the purpose of using sandbox was to deploy the code into 
+hadoop cluster and orchestrate the pipeline with airflow.
+
+The pipeline has two tasks.
+
+1. Landing_Zone_Ingest_Refine.scala
+
+Here the daily sales data is ingested and checked with the 1st business condition. If the Quantity_Sold or Vendor_ID is coming as null
+those records are compared with the records present in a Hold directory where we keep all the inavalid records. If any records become valid they are 
+written to Valid directory remaining data which are already valid are written to Valid directory. This kind of check happens in each run.
+
+2. Product_Price_Vendor_Update.scala
+
+Here the data from Valid directory is transformed and enriched based on 2nd,3rd and 4th business conditions and finally made as report ready.
+
+
+
+
