@@ -1,0 +1,6 @@
+A python script which will help you to get vaccine slots availability alerts for any location in India whenever free slots are available.
+You have to provide the State name, District name, Age category and Dose number(1st or 2nd) as parameters.
+If any slots are found it will check only after 20 seconds** if no slots were available at that time it will check again after 5 seconds**
+and it will give a notification sound** when slots are available.
+
+**all theses can be changed
